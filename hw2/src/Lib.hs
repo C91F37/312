@@ -24,7 +24,7 @@ data PExpr a = Value a
 
 instance Monad PExpr where
   return :: a -> PExpr a
-  return = todo
+  return a = Value a
 
   -- >>> (Value 4) >>= (\a -> Term (show a) [Value (show a), Value (show (succ a))])
   -- Term "4" [Value "4",Value "5"]
@@ -33,8 +33,9 @@ instance Monad PExpr where
   -- Term "More complex" [Term "4" [Value "4",Value "5"],Term "atom" [],Term "12" [Value "12",Value "13"]]
 
   (>>=) :: PExpr a -> (a -> PExpr b) -> PExpr b
-  (Value a) >>= f         = todo
-  (Term s pexprs) >>= f   = todo  -- Hint: map is your friend!
+  (Value a) >>= f         = f a 
+  (Term s pexprs) >>= f   = Term s (map (>>= f) pexprs)  -- Hint: map is your friend!
+
 
 instance Functor PExpr where
   fmap :: (a -> b) -> PExpr a -> PExpr b
